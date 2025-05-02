@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="row ">
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Профіль з даними користувача -->
+            <div class="col-md-5 ">
+                <div class="bg-white p-4 mb-4 mx-2 rounded custom-shadow border-primary-3 bg-opacity-75 ">
+                    <h3 class="text-center mb-4">{% trans "Профіль користувача" %}</h3>
+                    <form action="{% url "users:profile" %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12 mb-3 text-center">
+                                {% if user.image %}
+                                    <img src="{{ user.image.url }}"
+                                        alt="{% trans "Аватар користувача" %}" class="img-fluid rounded-circle"
+                                        style="max-width: 150px;">
+                                {% else %}
+                                    <img src="{% static "deps/images/baseavatar.jpg" %}"
+                                        alt="{% trans "Аватар користувача" %}" class="img-fluid rounded-circle"
+                                        style="max-width: 150px;">
+                                {% endif %}
+                                <input type="file" class="form-control mt-3" id="id_image"
+                                    name='image'
+                                    accept="image/*">
+                                    {% if form.image.errors %}
+                                    <div class="alert alert-danger alert-dismissible fade show">{{form.image.errors}}</div>
+                                    {% endif %}
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="id_first_name" class="form-label">{% trans "Ім'я" %}*</label>
+                                <input type="text" class="form-control" id="id_first_name"
+                                    name="first_name"
+                                    placeholder="{% trans "Введіть ваше ім'я" %}"
+                                    value="{{ form.first_name.value }}"
+                                    required>
+                                    {% if form.first_name.errors %}
+                                    <div class="alert alert-danger alert-dismissible fade show">{{form.first_name.errors}}</div>
+                                    {% endif %}
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="id_last_name" class="form-label">{% trans "Прізвище" %}*</label>
+                                <input type="text" class="form-control" id="id_last_name"
+                                    name="last_name"
+                                    placeholder="{% trans "Введіть ваше прізвище" %}"
+                                    value="{{ form.last_name.value }}"
+                                    required>
+                                    {% if form.last_name.errors %}
+                                    <div class="alert alert-danger alert-dismissible fade show">{{form.last_name.errors}}</div>
+                                    {% endif %}
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="id_username" class="form-label">{% trans "Ім'я користувача" %}*</label>
+                                <input type="text" class="form-control" id="id_username"
+                                    name="username"
+                                    placeholder="{% trans "Введіть ваше ім'я користувача" %}"
+                                    value="{{ form.username.value }}"
+                                    required>
+                                    {% if form.username.errors %}
+                                    <div class="alert alert-danger alert-dismissible fade show">{{form.username.errors}}</div>
+                                    {% endif %}
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                                                <label for="id_email" class="form-label">Email*</label>
+                                <input type="email" class="form-control" id="id_email"
+                                    name="email"
+                                    placeholder="{% trans "Введіть ваш email *youremail@example.com" %}"
+                                    value="{{ form.email.value }}"
+                                    required>
+                                    {% if form.email.errors %}
+                                    <div class="alert alert-danger alert-dismissible fade show">{{form.email.errors}}</div>
+                                    {% endif %}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">{% trans "Зберегти" %}</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Місячні платежі -->
+            <div class="col-md-7 ">
+                <div class="bg-white p-4 mb-4 mx-2 rounded custom-shadow  bg-opacity-75  border-warning-3">
+                    <h3 class="text-center mb-4">{% trans "Щомісячні платежі" %}</h3>
+                    <div class="container " id="monthly-payments-container ">
+                        <div class="mb-3">
+                            <p>{% trans "Сьогоднішня дата" %}: {{ today_date }}</p>
+                        </div>
+                        {% for payment in monthly_payments %}
+                        <div class="mb-3  rounded p-3 d-flex align-items-center border-primary-1 ">
+                            <img src="{% static '/deps/images/cars/'|add:payment.contract.car.slug|add:'.jpeg' %}" alt="{% trans "Фото авто" %}" class="img-thumbnail" style="width: 180px; height: auto; margin-right: 15px;">
+                            <div>
+                                <p>{% trans "Контракт" %} №{{ payment.contract.id }}</p>
+                                <p>{{ payment.message }}</p>
+                                <p>{% trans "Дата закінчення контракту" %}: {{ payment.contract.end_date }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+           <!-- Контракти -->
+<div class="col-md-12">
+    <div class="bg-white p-4 mb-4 mx-2 rounded custom-shadow">
+        <h3 class="text-center mb-4">{% trans "Мої контракти" %}</h3>
+        <div class="container">
+            <div class="accordion" id="accordionExample">
+                {% for contract in contracts %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ contract.id }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ contract.id }}" aria-expanded="false" aria-controls="collapse{{ contract.id }}">
+                            {% trans "Контракт" %} № {{ contract.id }} - {{ contract.start_date }} | {% trans "Статус:" %} <strong>{{ contract.status }}</strong>
+                        </button>
+                    </h2>
+                    <div id="collapse{{ contract.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ contract.id }}" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <table class="table table-hover custom-table">
+                                <thead>
+                                    <tr>
+                                        <th class="font-weight-bold">{% trans "Назва авто" %}</th>
+                                        <th class="font-weight-bold">{% trans "Дата початку" %}</th>
+                                        <th class="font-weight-bold">{% trans "Дата кінця" %}</th>
+                                        <th class="font-weight-bold">{% trans "Код авто" %}</th>
+                                        <th class="font-weight-bold">{% trans "Обраний пакет" %}</th>
+                                        <th class="font-weight-bold">{% trans "Загальна сума" %}</th>
+                                        <th class="font-weight-bold">{% trans "Щомісячна сума оплати" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ contract.car.name }}</td>
+                                        <td>{{ contract.start_date }}</td>
+                                        <td>{{ contract.end_date }}</td>
+                                        <td>{{ contract.car.code }}</td>
+                                        <td>{{ contract.service_package.name }}</td>
+                                        <td>{{ contract.total_price }} $</td>
+                                        <td>{{ contract.monthly_payment }} $</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Закінчилася розмітка контрактів -->
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static "deps/css/my_footer_css.css" %}">
+    <link rel="stylesheet" href="{% static "deps/css/my_base_css.css" %}">
+{% endblock %}
+
+{% block content %}
+<div style="background-color: white; padding: 40px;">
+    <h1 class="mt-5 pt-5 text-center"><strong>{{ content }}</strong></h1>
+
+    <div class="text-center my-4">
+        <img src="{% static image_path %}" alt="Begin Image" class="img-fluid" style="max-width: 50%; height: auto;">
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer class="py-4 bg-dark">
+    <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Kornieiev Volodymyr 2025</p>
+    </div>
+</footer>
+{% endblock %}

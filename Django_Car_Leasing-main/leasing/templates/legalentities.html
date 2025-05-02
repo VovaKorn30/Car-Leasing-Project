@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block css %}
+    <link rel="stylesheet" href="{% static "deps/css/my_base_css.css" %}">
+    <link rel="stylesheet" href="{% static "deps/css/my_css.css" %}">
+{% endblock %}
+{% block content %}
+    <style>
+    body {
+        background-image: none;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #0b5ed7;
+        color: white;
+    }
+</style>
+<div class="container">
+    <h1 style="font-size: 60px; font-style: italic; border-bottom: solid 6px #0b5ed7;">{% trans "Лізинг для юридичних осіб" %}</h1>
+    <p>{% trans "Інформація про лізинг для юридичних осіб та правила лізингу." %}</p>
+    <p style="border-bottom: solid 6px #0b5ed7; " class="py-3">{% trans "Детальна інформація про процес лізингу, умови та переваги для юридичних осіб." %}</p>
+
+    <p>{% trans "Додаткові подробиці та правила лізингу для юридичних осіб." %}</p>
+    <a href="{% url 'catalog:index' %}" class="btn btn-primary mt-3">{% trans "Перейти до каталогу" %}</a>
+</div>
+{% endblock %}

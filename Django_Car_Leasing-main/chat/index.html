@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Welcome to Chat</h1>
+    <p>This is a simple chat page.</p>
+
+    <form id="chat-form">
+        {% csrf_token %}
+        <label for="message">Your message:</label>
+        <input type="text" name="message" id="message" required>
+        <button type="submit">Send</button>
+    </form>
+
+    <div id="response">
+        <!-- Here will be the message from the bot -->
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Отримуємо CSRF токен з форми
+            var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+            // Обробка форми через AJAX
+            $('#chat-form').on('submit', function(e) {
+                e.preventDefault();
+
+                var message = $('#message').val().trim();
+                if (!message) return;
+
+                $.ajax({
+                    url: '/gemini-chat/',  // Вказуємо конкретний URL
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    contentType: 'application/json',  // Встановлюємо Content-Type як JSON
+                    data: JSON.stringify({ message: message }),  // Відправляємо дані в форматі JSON
+                    dataType: 'json',  // Явно вказуємо очікуваний тип даних
+                    beforeSend: function() {
+                        // Додаємо індикатор завантаження
+                        $('#response').append('<p>Waiting for response...</p>');
+                    },
+                    success: function(response) {
+                        $('#response').append(
+                            '<p><strong>You:</strong> ' + message + '</p>' +
+                            '<p><strong>Bot:</strong> ' + response.bot_reply + '</p>' +
+                            '<hr>'
+                        );
+                        $('#message').val('');  // Очищаємо поле вводу
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        $('#response').append(
+                            '<p style="color:red;">Error: Could not get response from server.</p>'
+                        );
+                    },
+                    complete: function() {
+                        // Видаляємо індикатор завантаження
+                        $('#response').find('p:contains("Waiting for response...")').remove();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

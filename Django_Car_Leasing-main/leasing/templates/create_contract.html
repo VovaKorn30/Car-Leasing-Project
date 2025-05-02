@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'deps/css/my_base_css.css' %}">
+    <link rel="stylesheet" href="{% static 'deps/css/my_css.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+{% endblock %}
+
+{% block content %}
+    <style>
+        body {
+            background-image: none;
+        }
+        .contracts-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .contract-card {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: white;
+        }
+        .contract-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .no-contracts {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #6c757d;
+        }
+    </style>
+
+    <!-- Price calculation section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="p-4 mx-2 rounded">
+                <h2 class="text-center pb-3">{% trans "Розрахунок вартості" %}</h2>
+                <div class="container">
+                    <div class="row border-blue-top border-blue-bottom">
+                        {% for price in calculated_prices %}
+                        <div class="col-lg-4 col-md-6 mb-4 pt-3">
+                            <div class="card h-100">
+                                <div class="card-body price-calculation border-warning-1 rounded">
+                                    <div>
+                                        <h5 class="card-title">{{ price.package.name }}</h5>
+                                        <p class="card-text">{% trans "Вартість пакета" %}: <b>{{ price.package.price }} $</b></p>
+                                    </div>
+                                    <div>
+                                        <p class="card-text">{% trans "Вартість за 1 рік лізингу" %}: <b>{{ price.total_price }} $</b></p>
+                                    </div>
+                                    <div>
+                                        <p class="card-text">{% trans "Щомісячний платіж за рік" %}: <b>{{ price.monthly_payment }} $</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mt-3">
+            <!-- Left column with form and package details -->
+            <div class="col-md-7 d-flex flex-column">
+                <!-- User form -->
+                <div class="p-3 align-items-end shadow auto-height bg-opacity-50 rounded border-primary-3 blue-background no-padding-margin text-white" style="flex-grow: 0;">
+                    <form method="post" id="leasing-form" class="form-inline no-padding-margin">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {{ form.start_date.label_tag }}
+                            {{ form.start_date }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.end_date.label_tag }}
+                            {{ form.end_date }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.service_package.label_tag }}
+                            {{ form.service_package }}
+                        </div>
+                        <button type="submit" class="btn">{% trans "Надіслати" %}</button>
+                    </form>
+                    {% if error_message %}
+                        <div class="alert alert-danger mt-3">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Selected package section -->
+                <div class="p-4 mb-4 mx-2 rounded shadow auto-height bg-white bg-opacity-50">
+                    <h3 class="text-center mb-4">{% trans "Вибраний пакет" %}</h3>
+                    <div class="container">
+                        <div class="card">
+                            <div class="card-body" id="package-details">
+                                {% if selected_package %}
+                                    <h5 class="card-title" id="package-name">{{ selected_package.name }}</h5>
+                                    <p class="card-text" id="package-description">{{ selected_package.description }}</p>
+                                    <p class="card-text">{% trans "Ціна" %}: <span id="package-price">{{ selected_package.price }}</span> $</p>
+                                    <p class="card-text">{% trans "Включені послуги" %}:</p>
+                                    <ul class="list-of-services scrollable-services" id="package-services">
+                                        {% for service in selected_package.services.all %}
+                                            <li>{{ service.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>{% trans "Пакет не вибрано" %}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column with car details -->
+            <div class="col-md-5 d-flex flex-column">
+                <div class="p-4 mb-4 mx-2 rounded shadow auto-height bg-white bg-opacity-50">
+                    <h3 class="text-center mb-4">{% trans "Вибраний автомобіль" %}</h3>
+                    <div class="container">
+                        <div class="card">
+                            <div class="card-body bg-white bg-opacity-75">
+                                <img src="{% static 'deps/images/cars/' %}{{ car.slug }}.jpeg" class="img-selected-car" alt="{{ car.name }}">
+                                <h5 class="card-title">{{ car.name }}</h5>
+                                <p class="card-text">
+                                    <ul class="custom-list">
+                                        <li>{% trans "Ціна" %}: <span id="car-price">{{ car.price }}</span> $</li>
+                                        <li>{% trans "Рік" %}: {{ car.year }}</li>
+                                        <li>{% trans "Тип палива" %}: {{ car.get_fuel_type_display }}</li>
+                                        <li>{% trans "Трансмісія" %}: {{ car.get_transmission_display }}</li>
+                                        <li>{% trans "Пробіг" %}: {{ car.mileage }}</li>
+                                        <li>{% trans "Тип приводу" %}: {{ car.get_drive_type_display }}</li>
+                                        <li>{% trans "Колір" %}: {{ car.get_color_display }}</li>
+                                        <li>{% trans "Об'єм двигуна" %}: {{ car.engine_capacity }}L</li>
+                                    </ul>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contracts section -->
+    <div class="container contracts-section">
+        <h2 class="text-center mb-4">{% trans "Всі контракти" %}</h2>
+        {% if contracts %}
+            <div class="row">
+                {% for contract in contracts %}
+                <div class="col-md-6">
+                    <div class="contract-card">
+                        <div class="contract-header">
+                            <h4>{{ contract.car.name }}</h4>
+                            <small class="text-muted">{% trans "Користувач" %}: {{ contract.user }}</small>
+                        </div>
+                        <div class="contract-details">
+                            <p><strong>{% trans "Пакет послуг" %}:</strong> {{ contract.service_package.name }}</p>
+                            <p><strong>{% trans "Загальна вартість" %}:</strong> {{ contract.total_price }} грн</p>
+                            <p><strong>{% trans "Щомісячний платіж" %}:</strong> {{ contract.monthly_payment }} грн</p>
+                            <p><strong>{% trans "Період" %}:</strong> {{ contract.start_date|date:"d.m.Y" }} - {{ contract.end_date|date:"d.m.Y" }}</p>
+                            <p><strong>{% trans "Статус" %}:</strong>
+                                {% if contract.end_date < now %}
+                                    <span class="text-danger">{% trans "Завершено" %}</span>
+                                {% else %}
+                                    <span class="text-success">{% trans "Активний" %}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-contracts">
+                <p>{% trans "Контракти не знайдено" %}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('leasing-form');
+        const servicePackageSelect = document.querySelector('#id_service_package');
+
+        // Load saved form data from localStorage
+        const savedFormData = JSON.parse(localStorage.getItem('leasingFormData'));
+        if (savedFormData) {
+            Object.keys(savedFormData).forEach(key => {
+                const input = form.querySelector(`[name="${key}"]`);
+                if (input) input.value = savedFormData[key];
+            });
+
+            if (savedFormData['service_package']) {
+                updatePackageDetails(savedFormData['service_package']);
+            }
+        }
+
+        // Save form data to localStorage on change
+        form.addEventListener('change', function() {
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => (data[key] = value));
+            localStorage.setItem('leasingFormData', JSON.stringify(data));
+        });
+
+        // Handle package selection change
+        servicePackageSelect.addEventListener('change', function() {
+            const selectedPackageId = this.value;
+            if (selectedPackageId) {
+                updatePackageDetails(selectedPackageId);
+                // Update URL without reloading
+                const url = new URL(window.location.href);
+                url.searchParams.set('package', selectedPackageId);
+                window.history.pushState({}, '', url);
+            }
+        });
+
+        function updatePackageDetails(packageId) {
+            fetch(`{% url 'leasing:get_package_details' 0 %}`.replace('0', packageId))
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.querySelector('#package-name').textContent = data.name;
+                    document.querySelector('#package-description').textContent = data.description;
+                    document.querySelector('#package-price').textContent = data.price;
+
+                    const servicesList = document.querySelector('#package-services');
+                    servicesList.innerHTML = '';
+                    data.services.forEach(service => {
+                        const li = document.createElement('li');
+                        li.textContent = service;
+                        servicesList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching package details:', error);
+                });
+        }
+    });
+    </script>
+{% endblock %}

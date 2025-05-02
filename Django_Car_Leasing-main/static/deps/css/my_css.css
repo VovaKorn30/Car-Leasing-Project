@@ -1,0 +1,242 @@
+
+body {
+  /*background-image: url("bg-image.jpg");*/
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center;
+  background-size: cover;
+  height: 100%;
+}
+
+.dropdown-toggle::after {
+  content: none;
+}
+
+.custom-shadow {
+  box-shadow: 5px 5px 25px 19px #000000;
+}
+
+.product_id {
+  color: gray;
+  font-size: 10px;
+}
+
+.badge.bg-warning.text-dark {
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 1rem;
+  box-shadow: 2px 2px 15px 9px #000000;
+}
+
+.badge-banner {
+  top: 80%;
+  border-radius: 15px;
+  font-size: 0.7rem;
+}
+
+
+.container img  {
+    width: 100%;
+}
+.custom-list {
+    list-style: none;
+    padding: 0;
+    background-color: rgba(239, 239, 240, 1);
+    border-left: #0b5ed7 solid;
+}
+
+.custom-list li {
+    color: black; /* Ensures text color is black */
+    list-style: none;
+    display: flex; /* Uses flexbox for alignment */
+    align-items: center; /* Aligns items vertically */
+}
+
+.custom-list li::before {
+    content: '•';
+    color: #0b5ed7; /* Sets bullet color to blue */
+    font-size: 30px;
+    margin: 5px 10px;
+    display: inline-block;
+    line-height: 1; /* Ensures vertical alignment */
+}
+
+.border-blue-top{
+    border-top: solid 6px #0b5ed7;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.border-blue-bottom{
+    border-bottom: solid 6px #0b5ed7;
+    margin-bottom: 10px;
+}
+
+.img-selected-car {
+    width: 5px; /* Встановіть бажану ширину */
+    /*height: auto; !* Зберігає пропорції зображення *!*/
+}
+.list-of-services {
+    list-style: none;
+    padding: 0;
+    /*background-color: rgba(1, 94, 215, 0.4); !* Light blue background with opacity *!*/
+    /*border-left: #0b5ed7 solid 5px;*/
+}
+.list-of-services li {
+    color: black; /* Ensures text color is black */
+    list-style: none;
+    margin-left: 10px;
+    padding-left: 50px; /* Adds space for the background image */
+    background: url("/static/deps/icons/check-mark.png") no-repeat left center;
+    background-size: 30px 30px; /* Ensures the background image is 20px by 20px */
+    padding-bottom: 10px;
+    display: flex; /* Uses flexbox for alignment */
+    align-items: center; /* Aligns items vertically */
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align items to the top */
+    flex-grow: 1;
+}
+.card-body > div:first-child {
+    flex-grow: 1;
+}
+.card-body .card-text:last-child {
+    margin-top: auto;
+}
+
+
+/* Collapse styles */
+.services-collapse {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out;
+}
+
+.services-collapse.show {
+    max-height: 250px;
+    overflow-y: auto;
+
+}
+
+.w-50 {
+    width: 50% !important; /* Make buttons half width */
+
+}
+
+.btn-opacity {
+    opacity: 0.9; /* Add opacity */
+}
+
+.btn-opacity:hover {
+    opacity: 1; /* Full opacity on hover */
+}
+
+.scrollable-services {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 15px; /* Optional, to add some space for the scrollbar */
+}
+.border-warning-doc{
+    border: #ffc107 solid 5px ;
+}
+.border-primary-doc{
+    border: #0d6efd solid 5px ;
+}
+.border-primary-1{
+    border: #0d6efd solid 1px ;
+}
+.border-primary-3{
+    border: #0d6efd solid 3px ;
+}
+.border-warning-1{
+    border: #ffc107 solid 1px ;
+}
+.border-warning-3{
+    border: #ffc107 solid 3px ;
+}
+
+.bg-blue{
+    background-color: #0b5ed7;
+}
+.price-calculation .card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+}
+.form-inline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+}
+.form-inline .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-right: 10px;
+}
+.form-inline .form-group label {
+            margin-bottom: 5px;
+}
+.form-inline .form-group input,
+.form-inline .form-group select {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+}
+.form-inline .btn {
+            flex: 0 0 auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ffd700;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+}
+.form-inline .btn:hover {
+            background-color: #e6c200;
+}
+.auto-height {
+            flex-grow: 0;
+}
+.blue-background {
+            background-color: #007bff;
+}
+.no-padding-margin {
+            padding: 5px !important;
+            margin: 5px !important;}
+
+.d-flex {
+            display: flex;
+        }
+.align-items-end {
+            align-items: flex-end;
+        }
+
+.custom-table {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.custom-table th,
+.custom-table td {
+    border: 1px solid #0056b3;
+    background-color: #007bff;
+    color: #fff; /* Ensure text is white */
+}
+
+.custom-table th {
+    background-color: #0056b3; /* Darker blue for headers */
+    font-weight: bold; /* Make headers bold */
+    color: #ffc107
+}

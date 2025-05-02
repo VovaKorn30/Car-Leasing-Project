@@ -1,0 +1,672 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static "deps/css/my_base_css.css" %}">
+    <link rel="stylesheet" href="{% static "deps/css/my_css.css" %}">
+    <style>
+        .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .car-container .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .car-container .col {
+            margin-bottom: 20px;
+        }
+
+        .favorite-icon {
+            font-size: 24px;
+            color: red;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .favorite-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 30px;
+            margin-bottom: 0;
+            flex-grow: 1;
+        }
+
+        #close-favorites {
+            display: none;
+        }
+
+        .favorite-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            position: relative;
+        }
+
+        .remove-btn {
+            display: none;
+            font-size: 16px;
+            color: white;
+            background-color: red;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            text-align: center;
+            line-height: 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: absolute;
+            top: 30px;
+            right: 0;
+        }
+
+        .remove-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .favorites-view .bi-heart-fill ~ .remove-btn {
+            display: block;
+        }
+
+        /* AI Chat Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: 20%;
+        }
+        .ai-message {
+            background-color: #f5f5f5;
+            margin-right: 20%;
+        }
+        .welcome-message {
+            background-color: #e8f5e9;
+            margin-right: 20%;
+            white-space: pre-wrap;
+        }
+        .chat-history-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .typing-indicator {
+            color: #666;
+            font-style: italic;
+            margin: 10px 0;
+        }
+
+        /* Стилі для рядка кнопок */
+        .buttons-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .buttons-row .btn {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .car-container .row {
+                flex-direction: column;
+            }
+
+            .card-title {
+                font-size: 24px;
+            }
+
+            .user-message {
+                margin-left: 10%;
+            }
+            .ai-message {
+                margin-right: 10%;
+            }
+
+            .buttons-row {
+                gap: 8px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<!-- AI Chat Modal -->
+<div id="aiChatModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeAIChat()">&times;</span>
+    <h4>Чат з AI-помічником</h4>
+    <div id="chatHistory" style="height:300px; overflow-y:auto; border:1px solid #ccc; padding:10px; margin-bottom:10px;"></div>
+    <div class="input-group">
+      <input type="text" id="userInput" class="form-control" placeholder="Введіть ваше запитання..." onkeypress="handleKeyPress(event)">
+      <button class="btn btn-primary" onclick="sendMessage()">Надіслати</button>
+    </div>
+    <div class="chat-history-controls">
+      <button class="btn btn-secondary" onclick="toggleChatHistory()" id="historyToggleBtn">Показати історію</button>
+      <button class="btn btn-outline-danger" onclick="clearChatHistory()">Очистити історію</button>
+    </div>
+  </div>
+</div>
+
+<!-- Comparison Table -->
+<div id="comparison-table" class="container my-4" style="display:none;">
+  <h3>Порівняння авто</h3>
+  <div class="table-wrapper">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Авто</th>
+          <th>Ціна</th>
+          <th>Рік</th>
+          <th>Двигун</th>
+          <th>Паливо</th>
+        </tr>
+      </thead>
+      <tbody id="comparison-body"></tbody>
+    </table>
+  </div>
+  <button onclick="closeComparisonTable()" class="btn btn-outline-danger mt-3">Закрити</button>
+</div>
+
+<!-- Рядок кнопок -->
+<div class="buttons-row">
+    <!-- Кнопка Фільтри -->
+    <div class="dropdown">
+        <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {% trans "Фільтри" %}
+        </button>
+        <form action="{% if request.GET.q %}{% url "catalog:search" %}{% else %}{% url "catalog:index"%}{% endif %}" method="get" class="dropdown-menu bg-dark" data-bs-theme="dark">
+            <div class="form-check text-white mx-3">
+                <input class="form-check-input" type="checkbox" name="discount" id="discountCheckbox" value="true" {% if discount_filter %}checked{% endif %}>
+                {% if request.GET.q %}
+                    <input type="hidden" name="q" value="{{ request.GET.q }}">
+                {% endif %}
+                <label class="form-check-label" for="flexCheckDefault">
+                    {% trans "Зі знижкою" %}
+                </label>
+            </div>
+            <p class="text-white mx-3 mt-3">{% trans "Сортування" %}</p>
+            <div class="form-check text-white mx-3">
+                <input class="form-check-input" type="radio" name="order_by" id="flexRadioDefault1" value="default"
+                {% if not request.GET.order_by or request.GET.order_by == 'default' %}checked{% endif %}>
+                <label class="form-check-label" for="flexRadioDefault1">
+                       {% trans "За замовчуванням" %}
+                </label>
+            </div>
+            <div class="form-check text-white mx-3">
+                <input class="form-check-input" type="radio" name="order_by" id="flexRadioDefault2" value="price"
+                {% if request.GET.order_by == 'price' %}checked{% endif %}>
+                <label class="form-check-label" for="flexRadioDefault2">
+                    {% trans "Ціна: від низької до високої" %}
+                </label>
+            </div>
+            <div class="form-check text-white mx-3">
+                <input class="form-check-input" type="radio" name="order_by" id="flexRadioDefault3" value="-price"
+                {% if request.GET.order_by == '-price' %}checked{% endif %}>
+                <label class="form-check-label" for="flexRadioDefault3">
+                    {% trans "Ціна: від високої до низької" %}
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary mx-3 mt-3">{% trans "Застосувати" %}</button>
+        </form>
+    </div>
+
+    <!-- Інші кнопки -->
+    <button onclick="showComparisonTable()" class="btn btn-dark">Порівняти авто</button>
+    <button onclick="showFavorites()" class="btn btn-dark">Обране</button>
+    <button onclick="closeFavorites()" class="btn btn-dark" id="close-favorites">Закрити</button>
+    <button onclick="openAIChat()" class="btn btn-dark">AI-помічник</button>
+</div>
+
+<div class="container car-container">
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="car-list">
+        {% for car in cars %}
+        <div class="col" data-code="{{ car.code }}">
+            <div class="card border-primary rounded custom-shadow">
+                <a href="{% url 'cars:auto' car.code %}">
+                    <img src="{% static '/deps/images/cars/'|add:car.slug|add:'.jpeg' %}" class="card-img-top" alt="{{ car.name }}">
+                </a>
+                <div class="card-body">
+                    <div class="title-wrapper">
+                        <a href="{% url 'cars:auto' car.code %}" class="text-decoration-none">
+                            <p class="card-title fw-bold">{{ car.name }}</p>
+                        </a>
+                        <div class="favorite-actions">
+                            <i class="favorite-icon bi {% if car.code in favorite_cars %}bi-heart-fill{% else %}bi-heart{% endif %}"
+                               onclick="toggleFavorite('{{ car.code }}')"
+                               id="fav-{{ car.code }}"></i>
+                            <button class="remove-btn" onclick="removeFavorite('{{ car.code }}')">×</button>
+                        </div>
+                    </div>
+                    <p class="card-text text-truncate">
+                        {% trans "Рік" %}: {{ car.year }}.
+                        {% trans "Двигун" %}: {{ car.engine_capacity }} л,
+                        {{ car.get_fuel_type_display }}.
+                    </p>
+                    <p><strong>{{ car.discounted_price|default:car.price }} $</strong></p>
+                    <button onclick="addToCompare('{{ car.code }}', '{{ car.name }}', '{{ car.price }}', '{{ car.year }}', '{{ car.engine_capacity }}', '{{ car.get_fuel_type_display }}', '{{ car.discounted_price|default:'' }}')" class="btn btn-outline-primary mt-2">{% trans "Додати до порівняння" %}</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+  let selectedCars = [];
+  let favoriteCars = JSON.parse(localStorage.getItem('favorites')) || [];
+  let isFavoritesView = false;
+  let chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
+  let isViewingFullHistory = false;
+  let currentSessionMessages = [];
+  let isFirstChatOpen = true;
+
+  function openAIChat() {
+    document.getElementById('aiChatModal').style.display = 'block';
+
+    // Додаємо вітальне повідомлення тільки при першому відкритті
+    if (isFirstChatOpen && chatHistory.length === 0) {
+        const welcomeMessage = {
+            type: 'ai',
+            content: "👋 Вітаємо! Ви потрапили на нашу платформу з інформацією про доступні автомобілі, доступні типи лізингу та актуальні нормативно-правові акти України щодо лізингу. 🚗\n
+            \nУ нас є великий вибір автомобілів, доступних для лізингу 📜\n\nБажаєте дізнатися більше про:\n- кожен тип лізингу\n- необхідні документи\n- законодавчі зміни\n- правила лізингу в Україні?\n\nПросто напишіть ваше запитання, і ми надамо всю необхідну інформацію!"
+        };
+
+        currentSessionMessages.push(welcomeMessage);
+        chatHistory.push(welcomeMessage);
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+
+        isFirstChatOpen = false;
+    }
+
+    displayCurrentSession();
+    document.getElementById('chatHistory').scrollTop = document.getElementById('chatHistory').scrollHeight;
+  }
+
+  function closeAIChat() {
+    document.getElementById('aiChatModal').style.display = 'none';
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  }
+
+  function sendMessage() {
+    const userInput = document.getElementById('userInput').value;
+    if (!userInput) return;
+
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    const userMessage = { type: 'user', content: userInput };
+
+    currentSessionMessages.push(userMessage);
+    chatHistory.push(userMessage);
+
+    chatHistoryDiv.innerHTML += `
+      <div class="chat-message user-message">
+        <strong>Ви:</strong> ${userInput}
+      </div>
+    `;
+
+    document.getElementById('userInput').value = '';
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+
+    const typingIndicator = document.createElement('div');
+    typingIndicator.id = 'typing-indicator';
+    typingIndicator.className = 'typing-indicator';
+    typingIndicator.innerHTML = '<em>AI набирає відповідь...</em>';
+    chatHistoryDiv.appendChild(typingIndicator);
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    fetch('/gemini-chat/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({ message: userInput })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Помилка мережі');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) indicator.remove();
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        let response = data.bot_reply || data.reply || "Не вдалося отримати відповідь";
+        // Видаляємо всі символи * з відповіді
+        response = response.replace(/\*/g, '');
+
+        const aiMessage = { type: 'ai', content: response };
+
+        currentSessionMessages.push(aiMessage);
+        chatHistory.push(aiMessage);
+
+        chatHistoryDiv.innerHTML += `
+            <div class="chat-message ai-message">
+                <strong>AI:</strong> ${response}
+            </div>
+        `;
+
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    })
+    .catch(error => {
+        console.error('Помилка:', error);
+
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) indicator.remove();
+
+        const fallbackResponse = "Вибачте, сталася помилка. Будь ласка, спробуйте пізніше.";
+        const aiMessage = { type: 'ai', content: fallbackResponse };
+
+        currentSessionMessages.push(aiMessage);
+        chatHistory.push(aiMessage);
+
+        chatHistoryDiv.innerHTML += `
+            <div class="chat-message ai-message">
+                <strong>AI:</strong> ${fallbackResponse}
+            </div>
+        `;
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    });
+  }
+
+  function toggleChatHistory() {
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    const toggleBtn = document.getElementById('historyToggleBtn');
+
+    if (isViewingFullHistory) {
+      displayCurrentSession();
+      toggleBtn.textContent = 'Показати історію';
+    } else {
+      displayFullHistory();
+      toggleBtn.textContent = 'Поточний чат';
+    }
+
+    isViewingFullHistory = !isViewingFullHistory;
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+  }
+
+  function displayCurrentSession() {
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    chatHistoryDiv.innerHTML = '';
+
+    currentSessionMessages.forEach(msg => {
+      const messageClass = msg.type === 'user' ? 'user-message' :
+                         msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
+      const sender = msg.type === 'user' ? 'Ви:' : 'AI:';
+
+      chatHistoryDiv.innerHTML += `
+        <div class="chat-message ${messageClass}">
+          <strong>${sender}</strong> ${msg.content}
+        </div>
+      `;
+    });
+  }
+
+  function displayFullHistory() {
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    chatHistoryDiv.innerHTML = '';
+
+    chatHistory.forEach(msg => {
+      const messageClass = msg.type === 'user' ? 'user-message' :
+                         msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
+      const sender = msg.type === 'user' ? 'Ви:' : 'AI:';
+
+      chatHistoryDiv.innerHTML += `
+        <div class="chat-message ${messageClass}">
+          <strong>${sender}</strong> ${msg.content}
+        </div>
+      `;
+    });
+  }
+
+  function clearChatHistory() {
+    if (confirm('Ви впевнені, що хочете очистити історію чатів?')) {
+      chatHistory = [];
+      currentSessionMessages = [];
+      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      isFirstChatOpen = true; // Дозволяємо показати вітальне повідомлення знову
+      displayCurrentSession();
+      if (isViewingFullHistory) {
+        toggleChatHistory();
+      }
+    }
+  }
+
+  function updateFavoriteIcons() {
+    favoriteCars.forEach(code => {
+      const icon = document.getElementById('fav-' + code);
+      if (icon) {
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill');
+      }
+    });
+  }
+
+  function toggleFavorite(code) {
+    const index = favoriteCars.indexOf(code);
+    const icon = document.getElementById('fav-' + code);
+    const card = document.querySelector(`[data-code='${code}']`);
+
+    if (index === -1) {
+      favoriteCars.push(code);
+      icon.classList.remove('bi-heart');
+      icon.classList.add('bi-heart-fill');
+    } else {
+      favoriteCars.splice(index, 1);
+      icon.classList.remove('bi-heart-fill');
+      icon.classList.add('bi-heart');
+      if (isFavoritesView) {
+        card.style.display = 'none';
+      }
+    }
+
+    localStorage.setItem('favorites', JSON.stringify(favoriteCars));
+  }
+
+  function removeFavorite(code) {
+    const icon = document.getElementById('fav-' + code);
+    const card = document.querySelector(`[data-code='${code}']`);
+    favoriteCars = favoriteCars.filter(c => c !== code);
+    if (icon) {
+      icon.classList.remove('bi-heart-fill');
+      icon.classList.add('bi-heart');
+    }
+    if (card) {
+      card.style.display = 'none';
+    }
+    localStorage.setItem('favorites', JSON.stringify(favoriteCars));
+  }
+
+  function showFavorites() {
+    const carList = document.getElementById('car-list');
+    carList.classList.add('favorites-view');
+    isFavoritesView = true;
+
+    const cards = document.querySelectorAll('#car-list .col');
+    cards.forEach(card => {
+      const code = card.getAttribute('data-code');
+      if (!favoriteCars.includes(code)) {
+        card.style.display = 'none';
+      } else {
+        card.style.display = 'block';
+      }
+    });
+    document.getElementById('close-favorites').style.display = 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeFavorites() {
+    const carList = document.getElementById('car-list');
+    carList.classList.remove('favorites-view');
+    isFavoritesView = false;
+
+    const cards = document.querySelectorAll('#car-list .col');
+    cards.forEach(card => {
+      card.style.display = 'block';
+    });
+    document.getElementById('close-favorites').style.display = 'none';
+  }
+
+  function addToCompare(code, name, price, year, engine, fuel, discounted) {
+    if (selectedCars.find(car => car.code === code)) {
+      alert("Вже додано до порівняння");
+      return;
+    }
+
+    selectedCars.push({
+      code,
+      name,
+      price: parseFloat(price),
+      year,
+      engine_capacity: engine,
+      fuel_type: fuel,
+      discounted_price: discounted ? parseFloat(discounted) : parseFloat(price)
+    });
+  }
+
+  function updateComparison() {
+    const body = document.getElementById('comparison-body');
+    body.innerHTML = '';
+    selectedCars.forEach(car => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${car.name}</td>
+        <td>${car.discounted_price.toFixed(2)} $</td>
+        <td>${car.year}</td>
+        <td>${car.engine_capacity} л</td>
+        <td>${car.fuel_type}</td>
+      `;
+      body.appendChild(row);
+    });
+  }
+
+  function showComparisonTable() {
+    if (selectedCars.length < 2) {
+      alert("Виберіть щонайменше 2 авто");
+      return;
+    }
+    updateComparison();
+    document.getElementById('comparison-table').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeComparisonTable() {
+    document.getElementById('comparison-table').style.display = 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    updateFavoriteIcons();
+    const savedHistory = localStorage.getItem('chatHistory');
+    if (savedHistory) {
+      chatHistory = JSON.parse(savedHistory);
+    }
+  });
+</script>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center my-4">
+        <div class="custom-shadow d-flex">
+            {% if cars.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ cars.previous_page_number }}{% if request.GET.order_by %}&order_by={{ request.GET.order_by }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            {% for num in cars.paginator.page_range %}
+                <li class="page-item {% if cars.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}{% if request.GET.order_by %}&order_by={{ request.GET.order_by }}{% endif %}">{{ num }}</a>
+                </li>
+            {% endfor %}
+            {% if cars.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ cars.next_page_number }}{% if request.GET.order_by %}&order_by={{ request.GET.order_by }}{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </div>
+    </ul>
+</nav>
+{% endblock %}

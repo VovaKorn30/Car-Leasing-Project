@@ -1,0 +1,92 @@
+{% load static i18n %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'deps/css/my_base_css.css' %}">
+{% endblock %}
+<!DOCTYPE html>
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'deps/css/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'deps/css/my_css.css' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'deps/favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'deps/favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'deps/favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'deps/favicon/site.webmanifest' %}">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            background-image: url("{% static 'deps/images/background.jpeg' %}");
+            background-size: cover;
+            padding-top: 80px;
+        }
+    </style>
+</head>
+<body class="bg-secondary bg-opacity-25">
+<header>
+    <nav class="navbar navbar-expand-lg custom-navbar fixed-top w-100">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse justify-content-between" id="navbarContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 justify-content-between w-100">
+                    <li class="nav-item position-relative">
+                        <a class="navbar-brand nav-link text-white" href="{% url 'catalog:index' %}">{% trans 'ГОЛОВНА' %}</a>
+                    </li>
+                    <li class="nav-item dropdown position-relative">
+                        <a class="nav-link text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                            {% trans 'ЛІЗИНГ' %}
+                        </a>
+                        <ul class="dropdown-menu custom-dropdown">
+                            <li><a class="nav-item dropdown-item custom-dropdown-item" href="{% url 'leasing:legalentities' %}">{% trans 'Для юридичних осіб' %}</a></li>
+                            <li><a class="nav-item dropdown-item custom-dropdown-item" href="{% url 'leasing:individuals' %}">{% trans 'Для фізичних осіб' %}</a></li>
+                            <li><a class="nav-item dropdown-item custom-dropdown-item" href="{% url 'leasing:leasing_services' %}">{% trans 'Типи послуг' %}</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <a class="nav-link text-white" href="{% url 'catalog:index' %}">{% trans 'КАТАЛОГ АВТО' %}</a>
+                    </li>
+                    <li class="nav-item dropdown position-relative">
+                        <a class="nav-link text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{% trans 'КАБІНЕТ' %}</a>
+                        <ul class="dropdown-menu custom-dropdown">
+                            {% if user.is_superuser %}
+                                <li class="dropdown-item"><a href="{% url 'admin:index' %}">{% trans 'Адмін Панель' %}</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'user:profile' %}">{% trans 'Профіль' %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'user:logout' %}">{% trans 'Вийти' %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'user:login' %}">{% trans 'Увійти' %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'user:registration' %}">{% trans 'Зареєструватися' %}</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <img src="{% static 'deps/icons/search.svg' %}" class="search-icon ms-2" alt="Пошук">
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="search-form-wrapper">
+        <form class="d-flex search-form" role="search" action="{% url 'catalog:search' %}" method="get">
+            <div class="search-form-ui">
+                <input class="form-control me-2 search-input" type="search" name="q" placeholder="{% trans 'Введіть будь-який тип моделі/кольору/пального/... який хочете знайти' %}" aria-label="Search">
+                <button class="btn bg-primary border-warning text-white search-button" type="submit">{% trans 'Пошук' %}</button>
+            </div>
+        </form>
+    </div>
+</header>
+
+<section>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+</section>
+
+<script src="{% static 'deps/js/search.js' %}"></script>
+<script src="{% static 'deps/js/jquery/jquery-3.7.0.min.js' %}"></script>
+<script src="{% static 'deps/js/jquery-events.js' %}"></script>
+<script src="{% static 'deps/js/jquery-ajax.js' %}"></script>
+<script src="{% static 'deps/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+</html>

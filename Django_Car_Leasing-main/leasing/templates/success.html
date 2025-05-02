@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static "deps/css/my_base_css.css" %}">
+    <link rel="stylesheet" href="{% static "deps/css/my_css.css" %}">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>{% trans "Договір було створено!" %}</h1>
+</div>
+{% endblock %}
