@@ -184,7 +184,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- AI Chat Modal -->
 <div id="aiChatModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeAIChat()">&times;</span>
@@ -201,7 +200,6 @@
   </div>
 </div>
 
-<!-- Comparison Table -->
 <div id="comparison-table" class="container my-4" style="display:none;">
   <h3>Порівняння авто</h3>
   <div class="table-wrapper">
@@ -221,9 +219,7 @@
   <button onclick="closeComparisonTable()" class="btn btn-outline-danger mt-3">Закрити</button>
 </div>
 
-<!-- Рядок кнопок -->
 <div class="buttons-row">
-    <!-- Кнопка Фільтри -->
     <div class="dropdown">
         <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             {% trans "Фільтри" %}
@@ -234,7 +230,7 @@
                 {% if request.GET.q %}
                     <input type="hidden" name="q" value="{{ request.GET.q }}">
                 {% endif %}
-                <label class="form-check-label" for="flexCheckDefault">
+                <label class="form-check-label" for="discountCheckbox">
                     {% trans "Зі знижкою" %}
                 </label>
             </div>
@@ -243,7 +239,7 @@
                 <input class="form-check-input" type="radio" name="order_by" id="flexRadioDefault1" value="default"
                 {% if not request.GET.order_by or request.GET.order_by == 'default' %}checked{% endif %}>
                 <label class="form-check-label" for="flexRadioDefault1">
-                       {% trans "За замовчуванням" %}
+                            {% trans "За замовчуванням" %}
                 </label>
             </div>
             <div class="form-check text-white mx-3">
@@ -264,7 +260,6 @@
         </form>
     </div>
 
-    <!-- Інші кнопки -->
     <button onclick="showComparisonTable()" class="btn btn-dark">Порівняти авто</button>
     <button onclick="showFavorites()" class="btn btn-dark">Обране</button>
     <button onclick="closeFavorites()" class="btn btn-dark" id="close-favorites">Закрити</button>
@@ -286,8 +281,8 @@
                         </a>
                         <div class="favorite-actions">
                             <i class="favorite-icon bi {% if car.code in favorite_cars %}bi-heart-fill{% else %}bi-heart{% endif %}"
-                               onclick="toggleFavorite('{{ car.code }}')"
-                               id="fav-{{ car.code }}"></i>
+                                onclick="toggleFavorite('{{ car.code }}')"
+                                id="fav-{{ car.code }}"></i>
                             <button class="remove-btn" onclick="removeFavorite('{{ car.code }}')">×</button>
                         </div>
                     </div>
@@ -319,21 +314,21 @@
 
     // Додаємо вітальне повідомлення тільки при першому відкритті
     if (isFirstChatOpen && chatHistory.length === 0) {
-        const welcomeMessage = {
-            type: 'ai',
-            content: "👋 Вітаємо! Ви потрапили на нашу платформу з інформацією про доступні автомобілі, доступні типи лізингу та актуальні нормативно-правові акти України щодо лізингу. 🚗\n
-            \nУ нас є великий вибір автомобілів, доступних для лізингу 📜\n\nБажаєте дізнатися більше про:\n- кожен тип лізингу\n- необхідні документи\n- законодавчі зміни\n- правила лізингу в Україні?\n\nПросто напишіть ваше запитання, і ми надамо всю необхідну інформацію!"
-        };
+      const welcomeMessage = {
+        type: 'ai',
+        content: "👋 Вітаємо! Ви потрапили на нашу платформу з інформацією про доступні автомобілі, доступні типи лізингу та актуальні нормативно-правові акти України щодо лізингу. 🚗\n\nУ нас є великий вибір автомобілів, доступних для лізингу 📜\n\nБажаєте дізнатися більше про:\n- кожен тип лізингу\n- необхідні документи\n- законодавчі зміни\n- правила лізингу в Україні?\n\nПросто напишіть ваше запитання, і ми надамо всю необхідну інформацію!"
+      };
 
-        currentSessionMessages.push(welcomeMessage);
-        chatHistory.push(welcomeMessage);
-        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      currentSessionMessages.push(welcomeMessage);
+      chatHistory.push(welcomeMessage);
+      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
 
-        isFirstChatOpen = false;
+      isFirstChatOpen = false;
     }
 
     displayCurrentSession();
-    document.getElementById('chatHistory').scrollTop = document.getElementById('chatHistory').scrollHeight;
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
   }
 
   function closeAIChat() {
@@ -373,80 +368,79 @@
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 
     function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
         }
-        return cookieValue;
+      }
+      return cookieValue;
     }
     const csrftoken = getCookie('csrftoken');
 
     fetch('/gemini-chat/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify({ message: userInput })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({ message: userInput })
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Помилка мережі');
-        }
-        return response.json();
+      if (!response.ok) {
+        throw new Error('Помилка мережі');
+      }
+      return response.json();
     })
     .then(data => {
-        const indicator = document.getElementById('typing-indicator');
-        if (indicator) indicator.remove();
+      const indicator = document.getElementById('typing-indicator');
+      if (indicator) indicator.remove();
 
-        if (data.error) {
-            throw new Error(data.error);
-        }
+      if (data.error) {
+        throw new Error(data.error);
+      }
 
-        let response = data.bot_reply || data.reply || "Не вдалося отримати відповідь";
-        // Видаляємо всі символи * з відповіді
-        response = response.replace(/\*/g, '');
+      let response = data.bot_reply || data.reply || "Не вдалося отримати відповідь";
+      response = response.replace(/\*/g, '');
 
-        const aiMessage = { type: 'ai', content: response };
+      const aiMessage = { type: 'ai', content: response };
 
-        currentSessionMessages.push(aiMessage);
-        chatHistory.push(aiMessage);
+      currentSessionMessages.push(aiMessage);
+      chatHistory.push(aiMessage);
 
-        chatHistoryDiv.innerHTML += `
-            <div class="chat-message ai-message">
-                <strong>AI:</strong> ${response}
-            </div>
-        `;
+      chatHistoryDiv.innerHTML += `
+        <div class="chat-message ai-message">
+          <strong>AI:</strong> ${response}
+        </div>
+      `;
 
-        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
     })
     .catch(error => {
-        console.error('Помилка:', error);
+      console.error('Помилка:', error);
 
-        const indicator = document.getElementById('typing-indicator');
-        if (indicator) indicator.remove();
+      const indicator = document.getElementById('typing-indicator');
+      if (indicator) indicator.remove();
 
-        const fallbackResponse = "Вибачте, сталася помилка. Будь ласка, спробуйте пізніше.";
-        const aiMessage = { type: 'ai', content: fallbackResponse };
+      const fallbackResponse = "Вибачте, сталася помилка. Будь ласка, спробуйте пізніше.";
+      const aiMessage = { type: 'ai', content: fallbackResponse };
 
-        currentSessionMessages.push(aiMessage);
-        chatHistory.push(aiMessage);
+      currentSessionMessages.push(aiMessage);
+      chatHistory.push(aiMessage);
 
-        chatHistoryDiv.innerHTML += `
-            <div class="chat-message ai-message">
-                <strong>AI:</strong> ${fallbackResponse}
-            </div>
-        `;
-        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+      chatHistoryDiv.innerHTML += `
+        <div class="chat-message ai-message">
+          <strong>AI:</strong> ${fallbackResponse}
+        </div>
+      `;
+      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
     });
   }
 
@@ -472,7 +466,7 @@
 
     currentSessionMessages.forEach(msg => {
       const messageClass = msg.type === 'user' ? 'user-message' :
-                         msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
+                          msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
       const sender = msg.type === 'user' ? 'Ви:' : 'AI:';
 
       chatHistoryDiv.innerHTML += `
@@ -489,7 +483,7 @@
 
     chatHistory.forEach(msg => {
       const messageClass = msg.type === 'user' ? 'user-message' :
-                         msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
+                          msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
       const sender = msg.type === 'user' ? 'Ви:' : 'AI:';
 
       chatHistoryDiv.innerHTML += `
@@ -505,7 +499,7 @@
       chatHistory = [];
       currentSessionMessages = [];
       localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-      isFirstChatOpen = true; // Дозволяємо показати вітальне повідомлення знову
+      isFirstChatOpen = true;
       displayCurrentSession();
       if (isViewingFullHistory) {
         toggleChatHistory();
@@ -633,6 +627,7 @@
 
   function closeComparisonTable() {
     document.getElementById('comparison-table').style.display = 'none';
+    selectedCars = [];
   }
 
   document.addEventListener('DOMContentLoaded', function() {
