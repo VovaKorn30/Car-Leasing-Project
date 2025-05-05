@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+
+   {% extends "base.html" %}
 {% load static i18n %}
 
 {% block css %}
@@ -159,6 +160,153 @@
             white-space: nowrap;
         }
 
+        /* Стилі для кнопок у чаті */
+        .chat-buttons-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chat-btn {
+            padding: 8px 12px;
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .chat-btn:hover {
+            background-color: #3a5a8a;
+        }
+
+        /* Стилі для інформаційних блоків */
+        .info-block {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4a6fa5;
+        }
+
+        .info-title {
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .info-item {
+            margin-bottom: 8px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .info-item:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #4a6fa5;
+            font-weight: bold;
+        }
+
+        .highlight {
+            background-color: #fffde7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .leasing-plan {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .leasing-header {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+
+        .leasing-price {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .leasing-features {
+            padding: 15px;
+        }
+
+        .feature-list {
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* New styles for car cards */
+        .car-card {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .car-card-title {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+
+        .car-card-price {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4a017;
+        }
+
+        .car-card-features {
+            padding: 15px;
+        }
+
+        .car-card-features div {
+            margin-bottom: 5px;
+        }
+
+        .car-buttons-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .car-btn {
+            padding: 8px 12px;
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .car-btn:hover {
+            background-color: #3a5a8a;
+        }
+
         @media (max-width: 768px) {
             .car-container .row {
                 flex-direction: column;
@@ -178,45 +326,54 @@
             .buttons-row {
                 gap: 8px;
             }
+
+            .chat-buttons-container {
+                flex-direction: column;
+            }
+
+            .car-buttons-row {
+                flex-direction: column;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 {% endblock %}
 
+
 {% block content %}
 <div id="aiChatModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeAIChat()">&times;</span>
-    <h4>Чат з AI-помічником</h4>
-    <div id="chatHistory" style="height:300px; overflow-y:auto; border:1px solid #ccc; padding:10px; margin-bottom:10px;"></div>
-    <div class="input-group">
-      <input type="text" id="userInput" class="form-control" placeholder="Введіть ваше запитання..." onkeypress="handleKeyPress(event)">
-      <button class="btn btn-primary" onclick="sendMessage()">Надіслати</button>
+    <div class="modal-content">
+        <span class="close" onclick="closeAIChat()">&times;</span>
+        <h4>Чат з AI-помічником</h4>
+        <div id="chatHistory" style="height:300px; overflow-y:auto; border:1px solid #ccc; padding:10px; margin-bottom:10px;"></div>
+        <div class="input-group">
+            <input type="text" id="userInput" class="form-control" placeholder="Введіть ваше запитання..." onkeypress="handleKeyPress(event)">
+            <button class="btn btn-primary" onclick="sendMessage()">Надіслати</button>
+        </div>
+        <div class="chat-history-controls">
+            <button class="btn btn-secondary" onclick="toggleChatHistory()" id="historyToggleBtn">Показати історію</button>
+            <button class="btn btn-outline-danger" onclick="clearChatHistory()">Очистити історію</button>
+        </div>
     </div>
-    <div class="chat-history-controls">
-      <button class="btn btn-secondary" onclick="toggleChatHistory()" id="historyToggleBtn">Показати історію</button>
-      <button class="btn btn-outline-danger" onclick="clearChatHistory()">Очистити історію</button>
-    </div>
-  </div>
 </div>
 
 <div id="comparison-table" class="container my-4" style="display:none;">
-  <h3>Порівняння авто</h3>
-  <div class="table-wrapper">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Авто</th>
-          <th>Ціна</th>
-          <th>Рік</th>
-          <th>Двигун</th>
-          <th>Паливо</th>
-        </tr>
-      </thead>
-      <tbody id="comparison-body"></tbody>
-    </table>
-  </div>
-  <button onclick="closeComparisonTable()" class="btn btn-outline-danger mt-3">Закрити</button>
+    <h3>Порівняння авто</h3>
+    <div class="table-wrapper">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Авто</th>
+                    <th>Ціна</th>
+                    <th>Рік</th>
+                    <th>Двигун</th>
+                    <th>Паливо</th>
+                </tr>
+            </thead>
+            <tbody id="comparison-body"></tbody>
+        </table>
+    </div>
+    <button onclick="closeComparisonTable()" class="btn btn-outline-danger mt-3">Закрити</button>
 </div>
 
 <div class="buttons-row">
@@ -239,7 +396,7 @@
                 <input class="form-check-input" type="radio" name="order_by" id="flexRadioDefault1" value="default"
                 {% if not request.GET.order_by or request.GET.order_by == 'default' %}checked{% endif %}>
                 <label class="form-check-label" for="flexRadioDefault1">
-                            {% trans "За замовчуванням" %}
+                                {% trans "За замовчуванням" %}
                 </label>
             </div>
             <div class="form-check text-white mx-3">
@@ -301,344 +458,827 @@
 </div>
 
 <script>
-  let selectedCars = [];
-  let favoriteCars = JSON.parse(localStorage.getItem('favorites')) || [];
-  let isFavoritesView = false;
-  let chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
-  let isViewingFullHistory = false;
-  let currentSessionMessages = [];
-  let isFirstChatOpen = true;
+    let selectedCars = [];
+    let favoriteCars = JSON.parse(localStorage.getItem('favorites')) || [];
+    let isFavoritesView = false;
+    let chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
+    let isViewingFullHistory = false;
+    let currentSessionMessages = [];
+    let isFirstChatOpen = true;
 
-  function openAIChat() {
-    document.getElementById('aiChatModal').style.display = 'block';
+    function openAIChat() {
+        document.getElementById('aiChatModal').style.display = 'block';
 
-    // Додаємо вітальне повідомлення тільки при першому відкритті
-    if (isFirstChatOpen && chatHistory.length === 0) {
-      const welcomeMessage = {
-        type: 'ai',
-        content: "👋 Вітаємо! Ви потрапили на нашу платформу з інформацією про доступні автомобілі, доступні типи лізингу та актуальні нормативно-правові акти України щодо лізингу. 🚗\n\nУ нас є великий вибір автомобілів, доступних для лізингу 📜\n\nБажаєте дізнатися більше про:\n- кожен тип лізингу\n- необхідні документи\n- законодавчі зміни\n- правила лізингу в Україні?\n\nПросто напишіть ваше запитання, і ми надамо всю необхідну інформацію!"
-      };
+        
+        if (isFirstChatOpen && currentSessionMessages.length === 0) {
+            const welcomeMessage = {
+                type: 'ai',
+                content: "👋 Вітаємо! Ви потрапили на нашу платформу з інформацією про доступні автомобілі, доступні типи лізингу та актуальні законодавство України щодо лізингу. 🚗\n\nУ нас є великий вибір автомобілів, доступних для лізингу 📜\n\nБажаєте дізнатися більше про:\n- кожен тип лізингу\n- необхідні документи\n- законодавчі зміни\n- правила лізингу в Україні?\n\nПросто напишіть ваше запитання, і ми надамо всю необхідну інформацію!",
+                buttons: true
+            };
 
-      currentSessionMessages.push(welcomeMessage);
-      chatHistory.push(welcomeMessage);
-      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            currentSessionMessages.push(welcomeMessage);
+            chatHistory.push(welcomeMessage);
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            localStorage.setItem('currentSessionMessages', JSON.stringify(currentSessionMessages));
 
-      isFirstChatOpen = false;
-    }
-
-    displayCurrentSession();
-    const chatHistoryDiv = document.getElementById('chatHistory');
-    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-  }
-
-  function closeAIChat() {
-    document.getElementById('aiChatModal').style.display = 'none';
-  }
-
-  function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-      sendMessage();
-    }
-  }
-
-  function sendMessage() {
-    const userInput = document.getElementById('userInput').value;
-    if (!userInput) return;
-
-    const chatHistoryDiv = document.getElementById('chatHistory');
-    const userMessage = { type: 'user', content: userInput };
-
-    currentSessionMessages.push(userMessage);
-    chatHistory.push(userMessage);
-
-    chatHistoryDiv.innerHTML += `
-      <div class="chat-message user-message">
-        <strong>Ви:</strong> ${userInput}
-      </div>
-    `;
-
-    document.getElementById('userInput').value = '';
-    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-
-    const typingIndicator = document.createElement('div');
-    typingIndicator.id = 'typing-indicator';
-    typingIndicator.className = 'typing-indicator';
-    typingIndicator.innerHTML = '<em>AI набирає відповідь...</em>';
-    chatHistoryDiv.appendChild(typingIndicator);
-    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-
-    function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-          const cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
+            isFirstChatOpen = false;
         }
-      }
-      return cookieValue;
+
+        displayCurrentSession();
+        const chatHistoryDiv = document.getElementById('chatHistory');
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
     }
-    const csrftoken = getCookie('csrftoken');
 
-    fetch('/gemini-chat/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrftoken
-      },
-      body: JSON.stringify({ message: userInput })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Помилка мережі');
-      }
-      return response.json();
-    })
-    .then(data => {
-      const indicator = document.getElementById('typing-indicator');
-      if (indicator) indicator.remove();
+    function closeAIChat() {
+        document.getElementById('aiChatModal').style.display = 'none';
+    }
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
 
-      let response = data.bot_reply || data.reply || "Не вдалося отримати відповідь";
-      response = response.replace(/\*/g, '');
+    function sendMessage() {
+        const userInput = document.getElementById('userInput');
+        const message = userInput.value.trim();
+        if (!message) return;
 
-      const aiMessage = { type: 'ai', content: response };
+        const chatHistoryDiv = document.getElementById('chatHistory');
+        const userMessage = { type: 'user', content: message };
 
-      currentSessionMessages.push(aiMessage);
-      chatHistory.push(aiMessage);
+        currentSessionMessages.push(userMessage);
+        chatHistory.push(userMessage);
 
-      chatHistoryDiv.innerHTML += `
-        <div class="chat-message ai-message">
-          <strong>AI:</strong> ${response}
-        </div>
-      `;
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        localStorage.setItem('currentSessionMessages', JSON.stringify(currentSessionMessages));
 
-      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-      chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-    })
-    .catch(error => {
-      console.error('Помилка:', error);
+        chatHistoryDiv.innerHTML += `
+            <div class="chat-message user-message">
+                <strong>Ви:</strong> ${message}
+            </div>
+        `;
 
-      const indicator = document.getElementById('typing-indicator');
-      if (indicator) indicator.remove();
+        userInput.value = '';
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 
-      const fallbackResponse = "Вибачте, сталася помилка. Будь ласка, спробуйте пізніше.";
-      const aiMessage = { type: 'ai', content: fallbackResponse };
+        const typingIndicator = document.createElement('div');
+        typingIndicator.id = 'typing-indicator';
+        typingIndicator.className = 'typing-indicator';
+        typingIndicator.innerHTML = '<em>AI набирає відповідь...</em>';
+        chatHistoryDiv.appendChild(typingIndicator);
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
 
-      currentSessionMessages.push(aiMessage);
-      chatHistory.push(aiMessage);
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
 
-      chatHistoryDiv.innerHTML += `
-        <div class="chat-message ai-message">
-          <strong>AI:</strong> ${fallbackResponse}
-        </div>
-      `;
-      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-      chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        fetch('/gemini-chat/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Помилка мережі');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            let response = data.bot_reply || data.reply || "Не вдалося отримати відповідь";
+            response = response.replace(/\*/g, '');
+
+            const aiMessage = { type: 'ai', content: response };
+
+            currentSessionMessages.push(aiMessage);
+            chatHistory.push(aiMessage);
+
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            localStorage.setItem('currentSessionMessages', JSON.stringify(currentSessionMessages));
+
+            chatHistoryDiv.innerHTML += `
+                <div class="chat-message ai-message">
+                    <strong>AI:</strong> ${response}
+                </div>
+            `;
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        })
+        .catch(error => {
+            console.error('Помилка:', error);
+
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+
+            const fallbackResponse = "Вибачте, сталася помилка. Будь ласка, спробуйте пізніше.";
+            const aiMessage = { type: 'ai', content: fallbackResponse };
+
+            currentSessionMessages.push(aiMessage);
+            chatHistory.push(aiMessage);
+
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            localStorage.setItem('currentSessionMessages', JSON.stringify(currentSessionMessages));
+
+            chatHistoryDiv.innerHTML += `
+                <div class="chat-message ai-message">
+                    <strong>AI:</strong> ${fallbackResponse}
+                </div>
+            `;
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        });
+    }
+
+    function sendPredefinedMessage(message) {
+        document.getElementById('userInput').value = message;
+        sendMessage();
+    }
+
+    function displayCurrentSession() {
+        const chatHistoryDiv = document.getElementById('chatHistory');
+        chatHistoryDiv.innerHTML = '';
+
+        currentSessionMessages.forEach(msg => {
+            let messageContent = msg.content;
+            if (msg.buttons) {
+                messageContent += `
+                    <div class="car-buttons-row">
+                        <button class="car-btn" onclick="showAvailableCars()">Авто у наявності</button>
+                        <button class="car-btn" onclick="showLeasingTypes()">Типи лізингу</button>
+                        <button class="car-btn" onclick="sendPredefinedMessage('Законодавство України про лізинг')">Законодавство України про лізинг</button>
+                    </div>
+                `;
+            }
+
+            const messageClass = msg.type === 'user' ? 'user-message' :
+                                msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
+            const sender = msg.type === 'user' ? 'Ви:' : 'AI:';
+
+            chatHistoryDiv.innerHTML += `
+                <div class="chat-message ${messageClass}">
+                    <strong>${sender}</strong> ${messageContent}
+                </div>
+            `;
+        });
+    }
+
+    function displayFullHistory() {
+        const chatHistoryDiv = document.getElementById('chatHistory');
+        chatHistoryDiv.innerHTML = '';
+
+        chatHistory.forEach(msg => {
+            let messageContent = msg.content;
+            if (msg.buttons) {
+                messageContent += `
+                    <div class="car-buttons-row">
+                        <button class="car-btn" onclick="showAvailableCars()">Авто у наявності</button>
+                        <button class="car-btn" onclick="showLeasingTypes()">Типи лізингу</button>
+                        <button class="car-btn" onclick="sendPredefinedMessage('Законодавство України про лізинг')">Законодавство України про лізинг</button>
+                    </div>
+                `;
+            }
+            const messageClass = msg.type === 'user' ? 'user-message' :
+                                msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
+            const sender = msg.type === 'user' ? 'Ви:' : 'AI:';
+
+            chatHistoryDiv.innerHTML += `
+                <div class="chat-message ${messageClass}">
+                    <strong>${sender}</strong> ${messageContent}
+                </div>
+            `;
+        });
+    }
+
+    function toggleChatHistory() {
+        const chatHistoryDiv = document.getElementById('chatHistory');
+        const toggleBtn = document.getElementById('historyToggleBtn');
+
+        if (isViewingFullHistory) {
+            displayCurrentSession();
+            toggleBtn.textContent = 'Показати історію';
+        } else {
+            displayFullHistory();
+            toggleBtn.textContent = 'Поточний чат';
+        }
+
+        isViewingFullHistory = !isViewingFullHistory;
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    }
+
+    function clearChatHistory() {
+        if (confirm('Ви впевнені, що хочете очистити історію чатів?')) {
+            chatHistory = [];
+            currentSessionMessages = [];
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            localStorage.setItem('currentSessionMessages', JSON.stringify(currentSessionMessages));
+            isFirstChatOpen = true;
+            displayCurrentSession();
+            if (isViewingFullHistory) {
+                toggleChatHistory();
+            }
+        }
+    }
+
+    function showAvailableCars() {
+        const message = {
+            type: 'ai',
+            content: "🚗 Ось список доступних автомобілів:",
+            buttons: false
+        };
+
+        currentSessionMessages.push(message);
+        chatHistory.push(message);
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        localStorage.setItem('currentSessionMessages', JSON.stringify(currentSessionMessages));
+
+        const chatHistoryDiv = document.getElementById('chatHistory');
+
+        // Додаємо HTML для відображення списку авто
+        chatHistoryDiv.innerHTML += `
+            <div class="chat-message ai-message">
+                <strong>AI:</strong> 🚗 Ось список доступних автомобілів:
+<div class="car-card">
+    <div class="car-card-title">Toyota Camry 2021</div>
+    <div class="car-card-price">25,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.5L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 5,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> білий</div>
+        <div><strong>Код:</strong> TOYCAM2021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Honda Accord 2020</div>
+    <div class="car-card-price">24,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 1.5L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 8,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> чорний</div>
+        <div><strong>Код:</strong> HONACC2020</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">BMW 3 Series 2019</div>
+    <div class="car-card-price">35,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, дизель</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 12,000 миль</div>
+        <div><strong>Привід:</strong> задній (RWD)</div>
+        <div><strong>Колір:</strong> синій</div>
+        <div><strong>Код:</strong> BMW32019</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Audi A4 2021</div>
+    <div class="car-card-price">37,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 7,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> червоний</div>
+        <div><strong>Код:</strong> AUDI42021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Mercedes-Benz C-Class 2021</div>
+    <div class="car-card-price">40,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 6,000 миль</div>
+        <div><strong>Привід:</strong> задній (RWD)</div>
+        <div><strong>Колір:</strong> сріблястий</div>
+        <div><strong>Код:</strong> MBCC2021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Ford Focus 2018</div>
+    <div class="car-card-price">20,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 1.5L, бензин</div>
+        <div><strong>Трансмісія:</strong> МКПП</div>
+        <div><strong>Пробіг:</strong> 30,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> сірий</div>
+        <div><strong>Код:</strong> FORFOC2018</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Chevrolet Malibu 2019</div>
+    <div class="car-card-price">22,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 1.5L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 25,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> чорний</div>
+        <div><strong>Код:</strong> CHEMAL2019</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Nissan Altima 2020</div>
+    <div class="car-card-price">23,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.5L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 15,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> білий</div>
+        <div><strong>Код:</strong> NISALT2020</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Subaru Impreza 2021</div>
+    <div class="car-card-price">21,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 10,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> синій</div>
+        <div><strong>Код:</strong> SUBIMP2021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Volkswagen Passat 2021</div>
+    <div class="car-card-price">27,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 5,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> сріблястий</div>
+        <div><strong>Код:</strong> VWPS2021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Hyundai Sonata 2020</div>
+    <div class="car-card-price">24,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 12,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> червоний</div>
+        <div><strong>Код:</strong> HYNSON2020</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Kia Optima 2019</div>
+    <div class="car-card-price">23,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.4L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 20,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> білий</div>
+        <div><strong>Код:</strong> KIAOPT2019</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Mazda 6 2021</div>
+    <div class="car-card-price">26,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.5L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 7,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> сірий</div>
+        <div><strong>Код:</strong> MAZ62021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Lexus ES 2020</div>
+    <div class="car-card-price">42,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 3.5L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 10,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> чорний</div>
+        <div><strong>Код:</strong> LEXES2020</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Tesla Model 3 2021</div>
+    <div class="car-card-price">45,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> електричний</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 5,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> білий</div>
+        <div><strong>Код:</strong> TESM32021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Volvo S60 2022</div>
+    <div class="car-card-price">30,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, гібрид</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 4,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> білий</div>
+        <div><strong>Код:</strong> VOLVS602022</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Jaguar XE 2020</div>
+    <div class="car-card-price">35,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 15,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> чорний</div>
+        <div><strong>Код:</strong> JAGXE2020</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Alfa Romeo Giulia 2021</div>
+    <div class="car-card-price">37,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 7,000 миль</div>
+        <div><strong>Привід:</strong> задній (RWD)</div>
+        <div><strong>Колір:</strong> чорний</div>
+        <div><strong>Код:</strong> ARGR2021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Infiniti Q50 2020</div>
+    <div class="car-card-price">38,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 3.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 12,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> білий</div>
+        <div><strong>Код:</strong> INQ502020</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Cadillac CT5 2022</div>
+    <div class="car-card-price">42,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 5,000 миль</div>
+        <div><strong>Привід:</strong> задній (RWD)</div>
+        <div><strong>Колір:</strong> синій</div>
+        <div><strong>Код:</strong> CADCT52022</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Genesis G70 2021</div>
+    <div class="car-card-price">39,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 3.3L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 10,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> сірий</div>
+        <div><strong>Код:</strong> GENG702021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Acura TLX 2021</div>
+    <div class="car-card-price">36,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 8,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> чорний</div>
+        <div><strong>Код:</strong> ACTLX2021</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Lincoln MKZ 2020</div>
+    <div class="car-card-price">34,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, гібрид</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 9,000 миль</div>
+        <div><strong>Привід:</strong> повний (AWD)</div>
+        <div><strong>Колір:</strong> чорний</div>
+        <div><strong>Код:</strong> LINMKZ2020</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Buick Regal 2019</div>
+    <div class="car-card-price">31,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 2.0L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 15,000 миль</div>
+        <div><strong>Привід:</strong> передній (FWD)</div>
+        <div><strong>Колір:</strong> червоний</div>
+        <div><strong>Код:</strong> BUIREG2019</div>
+    </div>
+</div>
+
+<div class="car-card">
+    <div class="car-card-title">Chrysler 300 2021</div>
+    <div class="car-card-price">35,000 $</div>
+    <div class="car-card-features">
+        <div><strong>Двигун:</strong> 3.6L, бензин</div>
+        <div><strong>Трансмісія:</strong> АКПП</div>
+        <div><strong>Пробіг:</strong> 11,000 миль</div>
+        <div><strong>Привід:</strong> задній (RWD)</div>
+        <div><strong>Колір:</strong> чорний</div>
+        <div><strong>Код:</strong> CHR3002021</div>
+    </div>
+</div>
+                <div class="car-buttons-row">
+                    <button class="car-btn" onclick="sendPredefinedMessage('Допомога з вибором авто')">Допомога з вибором</button>
+
+                </div>
+            </div>
+        `;
+
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    }
+
+    function showLeasingTypes() {
+        const message = {
+            type: 'ai',
+            content: "📋 Ось доступні типи лізингу:",
+            buttons: false
+        };
+
+        currentSessionMessages.push(message);
+        chatHistory.push(message);
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        localStorage.setItem('currentSessionMessages', JSON.stringify(currentSessionMessages));
+
+        const chatHistoryDiv = document.getElementById('chatHistory');
+
+        // Додаємо HTML для відображення типів лізингу
+        chatHistoryDiv.innerHTML += `
+            <div class="chat-message ai-message">
+                <strong>AI:</strong> 📋 Ось доступні типи лізингу:
+
+                <div class="leasing-plan">
+                    <div class="leasing-header">Base Leasing</div>
+                    <div class="leasing-price">450.00 $/місяць</div>
+                    <div class="leasing-features">
+                        <div class="feature-list">
+                            <div class="feature-title">Базові послуги:</div>
+                            <div class="info-item">• Технічне обслуговування кожні 10 000 км</div>
+                            <div class="info-item">• Страхування ОСЦПВ</div>
+                            <div class="info-item">• Заміна масла та фільтрів</div>
+                            <div class="info-item">• Допомога на дорогах</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="leasing-plan">
+                    <div class="leasing-header">Premium Leasing</div>
+                    <div class="leasing-price">600.00 $/місяць</div>
+                    <div class="leasing-features">
+                        <div class="feature-list">
+                            <div class="feature-title">Базові послуги:</div>
+                            <div class="info-item">• Все з Base Leasing +</div>
+                            <div class="info-item">• Повне страхування (КАСКО)</div>
+                            <div class="info-item">• Заміна гальмівних колодок</div>
+                            <div class="info-item">• Зберігання шин</div>
+                        </div>
+                        <div class="feature-list">
+                            <div class="feature-title">Додатково:</div>
+                            <div class="info-item">• Замінний автомобіль</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="leasing-plan">
+                    <div class="leasing-header">All Inclusive</div>
+                    <div class="leasing-price">800.00 $/місяць</div>
+                    <div class="leasing-features">
+                        <div class="feature-list">
+                            <div class="feature-title">Базові послуги:</div>
+                            <div class="info-item">• Все з Premium Leasing +</div>
+                            <div class="info-item">• Консьєрж-сервіс</div>
+                            <div class="info-item">• Документи для кордону</div>
+                            <div class="info-item">• Повне обслуговування</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-buttons-row">
+                    <button class="car-btn" onclick="sendPredefinedMessage('Детальніше про Base Leasing')">Детальніше про Base</button>
+                    <button class="car-btn" onclick="sendPredefinedMessage('Детальніше про Premium Leasing')">Детальніше про Premium</button>
+                    <button class="car-btn" onclick="sendPredefinedMessage('Детальніше про All Inclusive')">Детальніше про All Inclusive</button>
+                </div>
+            </div>
+        `;
+
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    }
+
+    function updateFavoriteIcons() {
+        favoriteCars.forEach(code => {
+            const icon = document.getElementById('fav-' + code);
+            if (icon) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+            }
+        });
+    }
+
+    function toggleFavorite(code) {
+        const index = favoriteCars.indexOf(code);
+        const icon = document.getElementById('fav-' + code);
+        const card = document.querySelector(`[data-code='${code}']`);
+
+        if (index === -1) {
+            favoriteCars.push(code);
+            icon.classList.remove('bi-heart');
+            icon.classList.add('bi-heart-fill');
+        } else {
+            favoriteCars.splice(index, 1);
+            icon.classList.remove('bi-heart-fill');
+            icon.classList.add('bi-heart');
+            if (isFavoritesView) {
+                card.style.display = 'none';
+            }
+        }
+
+        localStorage.setItem('favorites', JSON.stringify(favoriteCars));
+    }
+
+    function removeFavorite(code) {
+        const icon = document.getElementById('fav-' + code);
+        const card = document.querySelector(`[data-code='${code}']`);
+        favoriteCars = favoriteCars.filter(c => c !== code);
+        if (icon) {
+            icon.classList.remove('bi-heart-fill');
+            icon.classList.add('bi-heart');
+        }
+        if (card) {
+            card.style.display = 'none';
+        }
+        localStorage.setItem('favorites', JSON.stringify(favoriteCars));
+    }
+
+    function showFavorites() {
+        const carList = document.getElementById('car-list');
+        carList.classList.add('favorites-view');
+        isFavoritesView = true;
+
+        const cards = document.querySelectorAll('#car-list .col');
+        cards.forEach(card => {
+            const code = card.getAttribute('data-code');
+            if (!favoriteCars.includes(code)) {
+                card.style.display = 'none';
+            } else {
+                card.style.display = 'block';
+            }
+        });
+        document.getElementById('close-favorites').style.display = 'inline-block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closeFavorites() {
+        const carList = document.getElementById('car-list');
+        carList.classList.remove('favorites-view');
+        isFavoritesView = false;
+
+        const cards = document.querySelectorAll('#car-list .col');
+        cards.forEach(card => {
+            card.style.display = 'block';
+        });
+        document.getElementById('close-favorites').style.display = 'none';
+    }
+
+    function addToCompare(code, name, price, year, engine, fuel, discounted) {
+        if (selectedCars.find(car => car.code === code)) {
+            alert("Вже додано до порівняння");
+            return;
+        }
+
+        selectedCars.push({
+            code,
+            name,
+            price: parseFloat(price),
+            year,
+            engine_capacity: engine,
+            fuel_type: fuel,
+            discounted_price: discounted ? parseFloat(discounted) : parseFloat(price)
+        });
+    }
+    function updateComparison() {
+        const body = document.getElementById('comparison-body');
+        body.innerHTML = '';
+        selectedCars.forEach(car => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${car.name}</td>
+                <td>${car.discounted_price.toFixed(2)} $</td>
+                <td>${car.year}</td>
+                <td>${car.engine_capacity} л</td>
+                <td>${car.fuel_type}</td>
+            `;
+            body.appendChild(row);
+        });
+    }
+
+    function showComparisonTable() {
+        if (selectedCars.length < 2) {
+            alert("Виберіть щонайменше 2 авто");
+            return;
+        }
+        updateComparison();
+        document.getElementById('comparison-table').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closeComparisonTable() {
+        document.getElementById('comparison-table').style.display = 'none';
+        selectedCars = [];
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateFavoriteIcons();
+
+        // Відновлення історії чату
+        const savedHistory = localStorage.getItem('chatHistory');
+        if (savedHistory) {
+            chatHistory = JSON.parse(savedHistory);
+        }
+
+        const savedSession = localStorage.getItem('currentSessionMessages');
+        if (savedSession) {
+            currentSessionMessages = JSON.parse(savedSession);
+        }
+
+        // Відображення поточного чату
+        displayCurrentSession();
     });
-  }
-
-  function toggleChatHistory() {
-    const chatHistoryDiv = document.getElementById('chatHistory');
-    const toggleBtn = document.getElementById('historyToggleBtn');
-
-    if (isViewingFullHistory) {
-      displayCurrentSession();
-      toggleBtn.textContent = 'Показати історію';
-    } else {
-      displayFullHistory();
-      toggleBtn.textContent = 'Поточний чат';
-    }
-
-    isViewingFullHistory = !isViewingFullHistory;
-    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-  }
-
-  function displayCurrentSession() {
-    const chatHistoryDiv = document.getElementById('chatHistory');
-    chatHistoryDiv.innerHTML = '';
-
-    currentSessionMessages.forEach(msg => {
-      const messageClass = msg.type === 'user' ? 'user-message' :
-                          msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
-      const sender = msg.type === 'user' ? 'Ви:' : 'AI:';
-
-      chatHistoryDiv.innerHTML += `
-        <div class="chat-message ${messageClass}">
-          <strong>${sender}</strong> ${msg.content}
-        </div>
-      `;
-    });
-  }
-
-  function displayFullHistory() {
-    const chatHistoryDiv = document.getElementById('chatHistory');
-    chatHistoryDiv.innerHTML = '';
-
-    chatHistory.forEach(msg => {
-      const messageClass = msg.type === 'user' ? 'user-message' :
-                          msg.content.includes("👋 Вітаємо!") ? 'welcome-message' : 'ai-message';
-      const sender = msg.type === 'user' ? 'Ви:' : 'AI:';
-
-      chatHistoryDiv.innerHTML += `
-        <div class="chat-message ${messageClass}">
-          <strong>${sender}</strong> ${msg.content}
-        </div>
-      `;
-    });
-  }
-
-  function clearChatHistory() {
-    if (confirm('Ви впевнені, що хочете очистити історію чатів?')) {
-      chatHistory = [];
-      currentSessionMessages = [];
-      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-      isFirstChatOpen = true;
-      displayCurrentSession();
-      if (isViewingFullHistory) {
-        toggleChatHistory();
-      }
-    }
-  }
-
-  function updateFavoriteIcons() {
-    favoriteCars.forEach(code => {
-      const icon = document.getElementById('fav-' + code);
-      if (icon) {
-        icon.classList.remove('bi-heart');
-        icon.classList.add('bi-heart-fill');
-      }
-    });
-  }
-
-  function toggleFavorite(code) {
-    const index = favoriteCars.indexOf(code);
-    const icon = document.getElementById('fav-' + code);
-    const card = document.querySelector(`[data-code='${code}']`);
-
-    if (index === -1) {
-      favoriteCars.push(code);
-      icon.classList.remove('bi-heart');
-      icon.classList.add('bi-heart-fill');
-    } else {
-      favoriteCars.splice(index, 1);
-      icon.classList.remove('bi-heart-fill');
-      icon.classList.add('bi-heart');
-      if (isFavoritesView) {
-        card.style.display = 'none';
-      }
-    }
-
-    localStorage.setItem('favorites', JSON.stringify(favoriteCars));
-  }
-
-  function removeFavorite(code) {
-    const icon = document.getElementById('fav-' + code);
-    const card = document.querySelector(`[data-code='${code}']`);
-    favoriteCars = favoriteCars.filter(c => c !== code);
-    if (icon) {
-      icon.classList.remove('bi-heart-fill');
-      icon.classList.add('bi-heart');
-    }
-    if (card) {
-      card.style.display = 'none';
-    }
-    localStorage.setItem('favorites', JSON.stringify(favoriteCars));
-  }
-
-  function showFavorites() {
-    const carList = document.getElementById('car-list');
-    carList.classList.add('favorites-view');
-    isFavoritesView = true;
-
-    const cards = document.querySelectorAll('#car-list .col');
-    cards.forEach(card => {
-      const code = card.getAttribute('data-code');
-      if (!favoriteCars.includes(code)) {
-        card.style.display = 'none';
-      } else {
-        card.style.display = 'block';
-      }
-    });
-    document.getElementById('close-favorites').style.display = 'inline-block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function closeFavorites() {
-    const carList = document.getElementById('car-list');
-    carList.classList.remove('favorites-view');
-    isFavoritesView = false;
-
-    const cards = document.querySelectorAll('#car-list .col');
-    cards.forEach(card => {
-      card.style.display = 'block';
-    });
-    document.getElementById('close-favorites').style.display = 'none';
-  }
-
-  function addToCompare(code, name, price, year, engine, fuel, discounted) {
-    if (selectedCars.find(car => car.code === code)) {
-      alert("Вже додано до порівняння");
-      return;
-    }
-
-    selectedCars.push({
-      code,
-      name,
-      price: parseFloat(price),
-      year,
-      engine_capacity: engine,
-      fuel_type: fuel,
-      discounted_price: discounted ? parseFloat(discounted) : parseFloat(price)
-    });
-  }
-
-  function updateComparison() {
-    const body = document.getElementById('comparison-body');
-    body.innerHTML = '';
-    selectedCars.forEach(car => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${car.name}</td>
-        <td>${car.discounted_price.toFixed(2)} $</td>
-        <td>${car.year}</td>
-        <td>${car.engine_capacity} л</td>
-        <td>${car.fuel_type}</td>
-      `;
-      body.appendChild(row);
-    });
-  }
-
-  function showComparisonTable() {
-    if (selectedCars.length < 2) {
-      alert("Виберіть щонайменше 2 авто");
-      return;
-    }
-    updateComparison();
-    document.getElementById('comparison-table').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function closeComparisonTable() {
-    document.getElementById('comparison-table').style.display = 'none';
-    selectedCars = [];
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    updateFavoriteIcons();
-    const savedHistory = localStorage.getItem('chatHistory');
-    if (savedHistory) {
-      chatHistory = JSON.parse(savedHistory);
-    }
-  });
 </script>
 
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center my-4">
+        <div class="custom-shadow d-flex">
+            {% if cars.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ cars.previous_page_number }}{% if request.GET.order_by %}&order_by={{ request.GET.order_by }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center my-4">
         <div class="custom-shadow d-flex">
